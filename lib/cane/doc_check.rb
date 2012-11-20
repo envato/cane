@@ -73,7 +73,9 @@ module Cane
     end
 
     def file_names
-      Dir[opts.fetch(:doc_glob)].reject { |file| excluded?(file) }
+      style_glob = opts.fetch(:doc_glob)
+      excluded   = opts.fetch(:doc_exclude, [])
+      Cane::FileList.new(style_glob, excluded).files
     end
 
     def class_definition?(line)
@@ -86,16 +88,6 @@ module Cane
 
     def extract_class_name(line)
       line.match(/class\s+([^\s;]+)/)[1]
-    end
-
-    def exclusions
-      @exclusions ||= opts.fetch(:doc_exclude, []).flatten.map do |i|
-        Dir[i]
-      end.flatten.to_set
-    end
-
-    def excluded?(file)
-      exclusions.include?(file)
     end
 
     def worker

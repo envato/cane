@@ -2,6 +2,7 @@ require 'ripper'
 require 'set'
 
 require 'cane/file'
+require 'cane/file_list'
 require 'cane/task_runner'
 
 module Cane
@@ -179,7 +180,7 @@ module Cane
     end
 
     def file_names
-      Dir[opts.fetch(:abc_glob)]
+      Cane::FileList.new(opts.fetch(:abc_glob)).files
     end
 
     def order(result)

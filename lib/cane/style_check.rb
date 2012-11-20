@@ -1,6 +1,7 @@
 require 'set'
 
 require 'cane/file'
+require 'cane/file_list'
 require 'cane/task_runner'
 
 module Cane
@@ -60,7 +61,9 @@ module Cane
     end
 
     def file_list
-      Dir[opts.fetch(:style_glob)].reject {|f| excluded?(f) }
+      style_glob = opts.fetch(:style_glob)
+      excluded   = opts.fetch(:style_exclude, [])
+      Cane::FileList.new(style_glob, excluded).files
     end
 
     def measure
@@ -69,16 +72,6 @@ module Cane
 
     def map_lines(file_path, &block)
       Cane::File.iterator(file_path).map.with_index(&block)
-    end
-
-    def exclusions
-      @exclusions ||= opts.fetch(:style_exclude, []).flatten.map do |i|
-        Dir[i]
-      end.flatten.to_set
-    end
-
-    def excluded?(file)
-      exclusions.include?(file)
     end
 
     def worker
